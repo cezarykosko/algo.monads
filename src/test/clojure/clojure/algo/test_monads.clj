@@ -42,7 +42,7 @@
                           ]
                           :else [
                             c nil
-                          ]  
+                          ]
                         ]
                         :else [
                           b nil
@@ -80,6 +80,30 @@
                         :let [some-val 12345]]
                       [result b some-val])]
   (is (= monad-value ["less than six" 7 12345]))))
+
+(deftest either-monad
+  (is (= (domonad either-m
+           [x (m-result 3)
+            y ((fn [a] (right (* 3 a))) x)]
+           y)
+        (right 9)))
+  (is (= (domonad either-m
+           [x (left 3)
+            y ((fn [a] (right (* 3 a))) x)]
+           y)
+        (left 3)))
+  (is (= (domonad either-m
+           [x (right "abc")
+            y ((fn [a] (right (str a "def"))) x)]
+           y)
+        (right "abcdef")))
+  (is (= (domonad either-m
+           [x (right "abc")
+            y ((fn [a] (right (str a "def"))) x)
+            z (left 132)]
+           y)
+        (left 132)))
+  )
 
 (deftest sequence-monad
   (with-monad sequence-m

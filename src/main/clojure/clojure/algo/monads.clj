@@ -351,6 +351,24 @@
               (f mv))
   ])
 
+; Either monad
+(m/defmonad either-m
+  "Monad describing a result of computation, be it successful or not.
+   Result is successful iff the value stored is [:right *]
+   otherwise the value is [:left *]"
+  [m-result (fn m-result-phase [r]
+              [:right r])
+   m-bind (fn m-bind-phase
+            [pv f]
+            (match/match pv
+              [:right val] (f val)
+              [:left msg] pv)
+            )
+   ])
+
+(defn right [v] [:right v])
+(defn left [v] [:left v])
+
 ; Maybe monad
 (defmonad maybe-m
    "Monad describing computations with possible failures. Failure is
